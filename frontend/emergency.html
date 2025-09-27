@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HealTech - Emergency Services</title>
+<style>
+body { margin:0; font-family:"Segoe UI",sans-serif; background:linear-gradient(135deg,#a7f3d0,#ffffff,#93c5fd); min-height:100vh; display:flex; flex-direction:column; align-items:flex-start; }
+nav { width:100%; display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); position:sticky; top:0; z-index:10; }
+nav h1 { font-size:28px; font-weight:bold; background:linear-gradient(90deg,#2563eb,#16a34a,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0; }
+nav .links { display:flex; gap:20px; flex-wrap:wrap; }
+nav .links a { text-decoration:none; font-weight:500; color:#374151; transition:0.3s; }
+nav .links a:hover { color:#2563eb; }
+h1.page-title { font-size:42px; color:#1e40af; margin:40px 0 30px 0; text-align:center; width:100%; }
+.emergency-container { display:flex; justify-content:flex-start; align-items:flex-start; width:100%; gap:70px; margin-bottom:40px; padding:0 40px; }
+.emergency-buttons { display:flex; flex-direction:column; gap:20px; align-items:flex-start; }
+.emergency-buttons button { width:250px; padding:18px; font-size:20px; font-weight:bold; border:none; border-radius:30px; cursor:pointer; color:white; transition:0.3s; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
+.video-btn { background:linear-gradient(90deg,#93c5fd,#60a5fa); }   
+.audio-btn { background:linear-gradient(90deg,#6ee7b7,#34d399); }   
+.ambulance-btn { background:linear-gradient(90deg,#fda4af,#f87171); } 
+.emergency-buttons button:hover { opacity:0.9; transform:scale(1.05); }
+.list-container { display:flex; flex-direction:column; gap:20px; flex-grow:1; }
+.item { background:#fff; border-radius:15px; padding:15px; box-shadow:0 3px 8px rgba(0,0,0,0.1); margin-bottom:15px; transition:all 0.3s ease; opacity:0; }
+.item.show { opacity:1; }
+.available-heading { font-size:20px; color:#1e40af; font-weight:bold; margin-bottom:10px; }
+.placeholder-img { width:60px; height:60px; border-radius:50%; background:#d1d5db; display:inline-block; border:2px solid #2563eb; cursor:pointer; }
+footer { margin-top:auto; background:#1e40af; color:white; width:100%; padding:15px; text-align:center; }
+footer a { color:#93c5fd; margin:0 10px; text-decoration:none; }
+footer a:hover { text-decoration:underline; }
+.call-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:999; }
+.call-box { background:#fff; border-radius:20px; padding:20px; text-align:center; width:400px; box-shadow:0 5px 20px rgba(0,0,0,0.2); display:flex; flex-direction:column; gap:10px; }
+.call-box h3 { margin:5px 0; font-size:22px; color:#1e40af; }
+.call-status { margin:10px 0; font-size:18px; color:#16a34a; font-weight:bold; }
+.end-call { margin-top:10px; padding:10px 20px; background:#ef4444; color:white; border:none; border-radius:12px; cursor:pointer; font-size:16px; }
+.end-call:hover { background:#dc2626; }
+#video-room { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+@media (max-width:900px) { .emergency-container { flex-direction:column; align-items:center; } .emergency-buttons { align-items:center; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>HealTech</h1>
+  <div class="links">
+    <a href="#">Home</a>
+    <a href="#">Services</a>
+    <a href="#">Privacy</a>
+    <a href="#">Helpline</a>
+  </div>
+</nav>
+
+<h1 class="page-title">Emergency Services</h1>
+
+<div class="emergency-container">
+  <div class="emergency-buttons">
+    <button class="video-btn" onclick="showDoctors('video')">🎥 Video Call</button>
+    <button class="audio-btn" onclick="showDoctors('audio')">📞 Audio Call</button>
+    <button class="ambulance-btn" onclick="showAmbulances()">🚑 Need Ambulance Service?</button>
+  </div>
+  <div class="list-container">
+    <div class="doctor-list" id="doctor-list"></div>
+    <div class="ambulance-list" id="ambulance-list"></div>
+  </div>
+</div>
+
+<footer>
+  © 2025 HealTech | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+</footer>
+
+<div class="call-modal" id="callModal">
+  <div class="call-box">
+    <h3 id="callDoctorName">Doctor</h3>
+    <div class="call-status" id="callStatus">Connecting…</div>
+    <div id="video-room"></div>
+    <button class="end-call">End Call</button>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+const socket = io('http://localhost:3000');
+
+let localStream;
+const peers = {};
+
+const doctors = {
+  video: [
+    { name: "Dr. Aisha Khan", specialization: "Cardiologist", location: "Delhi", available: true },
+    { name: "Dr. Meera Singh", specialization: "Neurologist", location: "Bengaluru", available: true },
+    { name: "Dr. Rajesh Verma", specialization: "Pediatrician", location: "Mumbai", available: true }
+  ],
+  audio: [
+    { name: "Dr. Sunita Sharma", specialization: "General Physician", location: "Hyderabad", available: true },
+    { name: "Dr. Karan Verma", specialization: "ENT", location: "Jaipur", available: true },
+    { name: "Dr. Aman Gill", specialization: "Dermatologist", location: "Chennai", available: true }
+  ]
+};
+
+const ambulances = [
+  { name: "Ambulance 1", hospital: "PGI Chandigarh", distanceKm: 5, eta: "10 mins", phone: 7565664455 },
+  { name: "Ambulance 2", hospital: "Fortis Mohali", distanceKm: 8, eta: "15 mins", phone: 8765432109 }
+];
+
+document.getElementById("doctor-list").style.display = "none";
+document.getElementById("ambulance-list").style.display = "none";
+
+function showDoctors(type) {
+  document.getElementById("ambulance-list").style.display = "none";
+  const list = document.getElementById("doctor-list");
+  list.style.display = "block";
+  list.innerHTML = `<div class="available-heading">Available at the moment:</div>`;
+
+  doctors[type].filter(d => d.available).forEach(doc => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div style="display:flex; align-items:center; gap:15px;">
+        <span class="placeholder-img"></span>
+        <div>
+          <strong>${doc.name}</strong><br>
+          Specialization: ${doc.specialization}<br>
+          Location: ${doc.location}<br>
+          <button style="margin-top:6px;padding:6px 12px;border:none;border-radius:10px;background:#34d399;color:white;cursor:pointer;"
+            onclick="connectDoctor('${doc.name}','${type}')">📞 Call Now</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+    setTimeout(() => div.classList.add("show"), 10);
+  });
+}
+
+function showAmbulances() {
+  document.getElementById("doctor-list").style.display = "none";
+  const list = document.getElementById("ambulance-list");
+  list.style.display = "block";
+  list.innerHTML = "";
+  ambulances.sort((a,b) => a.distanceKm - b.distanceKm);
+  ambulances.forEach(a => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <strong>${a.name}</strong><br>
+      Hospital: ${a.hospital}<br>
+      Distance: ${a.distanceKm} km<br>
+      ETA: ${a.eta}<br>
+      Phone: <a href="tel:${a.phone}">${a.phone}</a><br>
+      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.hospital)}" target="_blank">📍 View on Map</a>
+    `;
+    list.appendChild(div);
+    setTimeout(() => div.classList.add("show"), 10);
+  });
+}
+
+// WebRTC video/audio call
+async function startCall(roomName, isVideo) {
+  const modal = document.getElementById("callModal");
+  const videoRoom = document.getElementById("video-room");
+  videoRoom.innerHTML = '';
+  modal.style.display = "flex";
+  document.getElementById("callStatus").innerText = "Connecting…";
+  document.getElementById("callDoctorName").innerText = roomName.replace('doctor-', '').replace(/-/g,' ');
+
+  localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+  const localVideo = document.createElement('video');
+  localVideo.srcObject = localStream;
+  localVideo.muted = true;
+  localVideo.autoplay = true;
+  localVideo.playsInline = true;
+  videoRoom.appendChild(localVideo);
+
+  socket.emit('join-room', roomName);
+
+  socket.on('user-connected', async userId => {
+    const pc = new RTCPeerConnection();
+    peers[userId] = pc;
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+    pc.ontrack = e => {
+      const remoteVideo = document.createElement('video');
+      remoteVideo.srcObject = e.streams[0];
+      remoteVideo.autoplay = true;
+      remoteVideo.playsInline = true;
+      videoRoom.appendChild(remoteVideo);
+    };
+
+    pc.onicecandidate = e => {
+      if (e.candidate) socket.emit('signal', { to: userId, signal: { candidate: e.candidate } });
+    };
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('signal', { to: userId, signal: { sdp: offer } });
+  });
+
+  socket.on('signal', async data => {
+    let pc = peers[data.from];
+    if (!pc) {
+      pc = new RTCPeerConnection();
+      peers[data.from] = pc;
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.ontrack = e => {
+        const remoteVideo = document.createElement('video');
+        remoteVideo.srcObject = e.streams[0];
+        remoteVideo.autoplay = true;
+        remoteVideo.playsInline = true;
+        videoRoom.appendChild(remoteVideo);
+      };
+
+      pc.onicecandidate = e => {
+        if (e.candidate) socket.emit('signal', { to: data.from, signal: { candidate: e.candidate } });
+      };
+    }
+
+    if (data.signal.sdp) {
+      await pc.setRemoteDescription(new RTCSessionDescription(data.signal.sdp));
+      if (data.signal.sdp.type === 'offer') {
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit('signal', { to: data.from, signal: { sdp: answer } });
+      }
+    }
+
+    if (data.signal.candidate) {
+      await pc.addIceCandidate(new RTCIceCandidate(data.signal.candidate));
+    }
+  });
+
+  socket.on('user-disconnected', id => {
+    if (peers[id]) {
+      peers[id].close();
+      delete peers[id];
+    }
+  });
+
+  document.querySelector(".end-call").onclick = () => {
+    Object.values(peers).forEach(pc => pc.close());
+    videoRoom.innerHTML = '';
+    modal.style.display = 'none';
+    localStream.getTracks().forEach(track => track.stop());
+  };
+
+  document.getElementById("callStatus").innerText = "Connected ✅";
+}
+
+function connectDoctor(name, type) {
+  const roomName = 'doctor-' + name.replace(/\s+/g, '-');
+  startCall(roomName, type==='video');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Portal - HealTech</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      width: 90%;
+      max-width: 1000px;
+    }
+
+    .feature {
+      border-radius: 20px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    }
+
+    .feature img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .content {
+      padding: 15px;
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .content h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #111827;
+    }
+
+    .content button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 5px;
+    }
+
+    .content button:hover {
+      background: #1e40af;
+    }
+
+    .back-btn {
+      margin-top: 40px;
+      padding: 12px 20px;
+      background: #34d399;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      background: #059669;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>👩‍⚕️ Patient Dashboard</h1>
+
+  <div class="grid">
+    <!-- 1. Symptoms Checker -->
+    <div class="feature">
+      <img src="https://miro.medium.com/v2/resize:fit:1400/1*qpB8ca3MApdeLiwoBpkUxQ.jpeg" alt="Symptoms Checker">
+      <div class="content">
+        <h2>🩺 Symptoms Checker</h2>
+        <button onclick="window.location.href='symptom.html'">Start</button>
+      </div>
+    </div>
+
+    <!-- 2. Consultation -->
+    <div class="feature">
+      <img src="https://goqii.com/blog/wp-content/uploads/Doctor-Consultation.jpg" alt="Consultation">
+      <div class="content">
+        <h2>💬 Need Consultation?</h2>
+        <div>
+          <!-- YES = Consultation Page -->
+          <button onclick="window.location.href='consultation.html'">Yes</button>
+          <!-- NO = Back Page -->
+          <button onclick="window.location.href='portal.html'">No</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Prescriptions -->
+    <div class="feature">
+      <img src="https://thumbs.dreamstime.com/b/close-up-image-professional-doctor-explaining-consulting-treatment-plan-surgery-old-lady-290996370.jpg" alt="Prescriptions">
+      <div class="content">
+        <h2>📄 Prescriptions</h2>
+        <button onclick="alert('Opening prescriptions...')">View</button>
+      </div>
+    </div>
+
+    <!-- 4. Pharmacy Stock -->
+    <div class="feature">
+      <img src="https://www.datarithm.co/hubfs/M_perpet-inventory.jpg" alt="Pharmacy">
+      <div class="content">
+        <h2>💊 Find Pharmacy Stock</h2>
+        <div>
+          <button onclick="alert('Searching medicine availability...')">Yes</button>
+          <button onclick="alert('No need now')">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="window.location.href='portal.html'">⬅ Back to Home</button>
+
+</body>
+</html>

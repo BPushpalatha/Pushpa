@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Specialization Details</title>
+  <style>
+    :root{
+      --bg: linear-gradient(180deg,#fff7e6 0%, #fff2cc 100%); /* warm orange-yellow background */
+      --card-radius: 12px;
+      --shadow: 0 10px 28px rgba(10,30,60,0.08);
+      --accent: #b45309;
+      --muted: #5b4b3f;
+      --green: #16a34a;
+      --max-width: 1200px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color: #222;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    header {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:16px 20px;
+      background:transparent;
+      max-width:var(--max-width);
+      margin:18px auto 0 auto;
+    }
+    .back-btn {
+      background:white; border-radius:10px; padding:10px 12px; border:0; box-shadow:var(--shadow); cursor:pointer;
+    }
+    .title { flex:1; text-align:center; font-weight:700; color:var(--accent); font-size:20px; }
+    .slot-search { display:flex; gap:8px; align-items:center; }
+
+    .container {
+      max-width:var(--max-width);
+      margin:18px auto;
+      display:grid;
+      grid-template-columns: 280px 1fr 320px;
+      gap:18px;
+      padding:0 12px 40px 12px;
+    }
+
+    /* Left: diseases */
+    .panel {
+      background:white; border-radius:var(--card-radius); padding:16px; box-shadow:var(--shadow);
+    }
+    .panel h3 { margin:0 0 8px 0; color:var(--accent); }
+    .diseases ul { margin:0; padding-left:18px; color:var(--muted); column-count:1; }
+    @media(min-width:900px){ .diseases ul { column-count:1; } }
+
+    /* center: patient & doctors */
+    .center-top {
+      background:white; padding:14px; border-radius:var(--card-radius); box-shadow:var(--shadow); text-align:center;
+      display:flex; flex-direction:column; gap:10px; align-items:center;
+    }
+    .center-top label{ color:var(--muted); font-size:13px; display:block; }
+    .center-top input[type="text"]{
+      padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); width:360px; font-size:15px;
+    }
+    .doctors-list { margin-top:12px; display:grid; gap:10px; }
+
+    .doctor-card {
+      display:flex; gap:12px; align-items:flex-start; padding:12px; background:white; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      border:1px solid rgba(0,0,0,0.03);
+      transition:transform .12s ease;
+      cursor: pointer;
+    }
+    .doctor-card:hover { transform:translateY(-6px); }
+    .avatar {
+      width:84px; height:84px; border-radius:10px; background:linear-gradient(180deg,#fff,#fff0e6); display:flex; align-items:center; justify-content:center; font-weight:700; color:white; font-size:18px; flex-shrink:0;
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      overflow:hidden;
+    }
+    .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .doc-main { flex:1; }
+    .doc-main h4 { margin:0; color:var(--accent); }
+    .doc-main p { margin:6px 0; color:var(--muted); font-size:13px; }
+    .meta { display:flex; gap:10px; align-items:center; color:#8a6b4a; font-weight:700; font-size:13px; margin-top:6px; }
+
+    .slots { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+    .slot {
+      padding:7px 10px; border-radius:8px; background:linear-gradient(180deg,#fff,#fff8ed); border:1px solid rgba(0,0,0,0.04);
+      font-weight:700; font-size:13px; cursor:pointer;
+    }
+    .slot.disabled { opacity:0.4; cursor:not-allowed; text-decoration:line-through; }
+
+    .book-btn { background:var(--green); color:white; padding:8px 12px; border-radius:10px; border:0; cursor:pointer; font-weight:700; }
+
+    /* right: profile edit */
+    .profile {
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .profile .profile-inner { display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; background:white; box-shadow:var(--shadow); border:1px solid rgba(0,0,0,0.03); }
+    .profile label{ font-size:13px; color:var(--muted); }
+    .profile input[type="file"]{ display:none; }
+    .upload-btn { background:var(--accent); color:white; padding:8px 10px; border-radius:8px; cursor:pointer; border:0; }
+
+    .small { font-size:13px; color:var(--muted); }
+
+    /* modal and toast */
+    .modal-back { position:fixed; inset:0; background:rgba(0,0,0,0.32); display:flex; align-items:center; justify-content:center; z-index:60; }
+    .modal { background:white; border-radius:12px; padding:16px; width:420px; box-shadow:0 18px 60px rgba(0,0,0,0.3); }
+    .modal h4 { margin:0 0 8px 0; color:var(--accent); }
+    .modal .row { display:flex; gap:8px; margin-top:8px; }
+    .modal input { padding:8px 10px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); flex:1; }
+    .modal .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+    .toast { position:fixed; top:18px; right:18px; background:var(--green); color:white; padding:10px 14px; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.2); z-index:80; display:none; }
+
+    @media (max-width:980px){
+      .container{ grid-template-columns: 1fr; padding:12px; }
+      .center-top input[type="text"]{ width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="back-btn" onclick="location.href='index.html'">← Back</button>
+    <div class="title" id="specTitle">Specialization</div>
+    <div class="slot-search">
+      <input id="slotSearch" placeholder="Search slot (e.g. 09:30 AM)" title="Enter slot time and press Enter" />
+      <button onclick="applySlotFilter()">Search</button>
+      <button onclick="clearSlotFilter()" style="margin-left:8px; background:#fff; border-radius:8px; border:1px solid rgba(0,0,0,0.06); padding:8px 10px; cursor:pointer;">Clear</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Left: diseases -->
+    <aside class="panel">
+      <h3>Diseases / Conditions</h3>
+      <div class="diseases" id="diseasesWrap"><ul id="diseaseList"></ul></div>
+    </aside>
+
+    <!-- Center: patient name + doctors -->
+    <section>
+      <div class="center-top">
+        <div>
+          <label for="patientName">Patient name</label>
+          <input id="patientName" placeholder="Enter patient name..." />
+        </div>
+        <div class="small">Selected specialization: <strong id="specLabel">—</strong></div>
+      </div>
+
+      <div id="doctorsContainer" class="doctors-list"></div>
+      <div id="noDocs" style="display:none; margin-top:18px; text-align:center; color:var(--muted); font-weight:700">No doctors found for this specialization / filter.</div>
+    </section>
+
+    <!-- Right: selected doctor profile editor -->
+    <aside class="profile panel" id="profilePanel">
+      <h3>Doctor Profile</h3>
+      <div id="profileEmpty" class="small">Click any doctor card to view or edit their profile</div>
+
+      <div id="profileEdit" style="display:none">
+        <div class="profile-inner">
+          <div id="profileAvatar" class="avatar" style="width:84px;height:84px;border-radius:10px">AB</div>
+          <div style="flex:1">
+            <div style="display:flex; gap:8px; align-items:center; justify-content:space-between">
+              <div>
+                <div id="profileName" style="font-weight:700; color:var(--accent)"></div>
+                <div id="profileSpec" class="small"></div>
+              </div>
+            </div>
+            <div style="margin-top:8px">
+              <div id="profileEdu" class="small"></div>
+              <div id="profileLoc" class="small"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center; margin-top:8px">
+          <label class="upload-btn" for="fileUpload">Upload photo</label>
+          <input id="fileUpload" type="file" accept="image/*" />
+          <button class="upload-btn" style="background:#4b5563" onclick="resetAvatar()">Reset</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <label class="small">Edit name</label>
+          <input id="editName" style="width:100%; padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06)" />
+          <label class="small" style="margin-top:8px; display:block">Education</label>
+          <input id="editEdu" style="width:100%; padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06)"/>
+          <label class="small" style="margin-top:8px; display:block">Location</label>
+          <input id="editLoc" style="width:100%; padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06)"/>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button class="book-btn" onclick="saveProfile()">Save Profile</button>
+            <button class="book-btn" style="background:#6b7280" onclick="cancelProfile()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmed Bookings Section (ADDED) -->
+      <div style="margin-top:16px">
+        <h3>Confirmed Bookings</h3>
+        <div id="bookingsList" class="small" style="max-height:240px; overflow-y:auto; padding-right:6px">
+          <div>No bookings yet.</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- modal root -->
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast">Booking successful</div>
+
+  <script>
+    /***********************
+     * Data for all specializations
+     * Keys must match exactly the names used on index.html data-name
+     ***********************/
+    const SPEC_DATA = {
+      "General Medicine": {
+        diseases: ['Common cold', 'Fever', 'Cough', 'Hypertension', 'Diabetes mellitus (Type 1 & 2)', 'URTI', 'Viral infections'],
+        doctors: [
+          { id:'gm1', name:'Dr. Asha Mehta', specialization:'General Medicine', education:'MBBS, MD (Gen Med)', location:'MG Road, Pune', distance_km:2.1, slots:['09:00 AM','09:30 AM','10:00 AM','02:00 PM'], avatar:null },
+          { id:'gm2', name:'Dr. Rohan Patel', specialization:'General Medicine', education:'MBBS, DNB (Internal Medicine)', location:'Koregaon Park, Pune', distance_km:5.3, slots:['11:00 AM','11:30 AM','03:00 PM','04:30 PM'], avatar:null }
+        ]
+      },
+
+      "Surgery": {
+        diseases: ['Appendicitis','Hernia','Trauma injuries','Post-operative care'],
+        doctors: [
+          { id:'su1', name:'Dr. Vikram Kapoor', specialization:'Surgery', education:'MBBS, MS (Surgery)', location:'City Hospital', distance_km:4.2, slots:['10:00 AM','01:00 PM','03:30 PM'], avatar:null },
+          { id:'su2', name:'Dr. Meera Shah', specialization:'Surgery', education:'MBBS, MCh', location:'Metro Clinic', distance_km:9.0, slots:['09:00 AM','11:30 AM','02:00 PM'], avatar:null }
+        ]
+      },
+
+      "Psychiatry": {
+        diseases: ['Depression','Anxiety','Stress disorders','Insomnia','Bipolar disorder'],
+        doctors: [
+          { id:'ps1', name:'Dr. Sunil Verma', specialization:'Psychiatry', education:'MBBS, MD (Psychiatry)', location:'Shivaji Nagar', distance_km:2.9, slots:['01:00 PM','02:00 PM','03:00 PM'], avatar:null },
+          { id:'ps2', name:'Dr. Anita Rao', specialization:'Psychiatry', education:'MBBS, DPM', location:'Kalyani Nagar', distance_km:6.1, slots:['10:30 AM','12:00 PM','04:00 PM'], avatar:null }
+        ]
+      },
+
+      "Neurology": {
+        diseases: ['Headache','Migraine','Epilepsy','Seizures','Stroke','Neuropathy'],
+        doctors: [
+          { id:'ne1', name:'Dr. Karan Desai', specialization:'Neurology', education:'MBBS, DM (Neurology)', location:'Wakad', distance_km:14.5, slots:['11:30 AM','12:30 PM','04:00 PM'], avatar:null },
+          { id:'ne2', name:'Dr. Nidhi Bhatt', specialization:'Neurology', education:'MBBS, MD', location:'Aundh', distance_km:6.5, slots:['09:30 AM','02:30 PM','05:00 PM'], avatar:null }
+        ]
+      },
+
+      "Cardiology": {
+        diseases: ['Hypertension','Chest pain','Coronary artery disease','Arrhythmia','Heart failure'],
+        doctors: [
+          { id:'ca1', name:'Dr. Sneha Rao', specialization:'Cardiology', education:'MBBS, DM (Cardiology)', location:'Camp', distance_km:1.8, slots:['10:30 AM','12:00 PM','03:30 PM'], avatar:null },
+          { id:'ca2', name:'Dr. Ramesh Iyer', specialization:'Cardiology', education:'MBBS, DM', location:'MG Road', distance_km:4.7, slots:['09:00 AM','11:00 AM','02:30 PM'], avatar:null }
+        ]
+      },
+
+      "Dermatology": {
+        diseases: ['Acne','Eczema','Psoriasis','Dermatitis','Fungal infections','Hair loss'],
+        doctors: [
+          { id:'de1', name:'Dr. Vikram Singh', specialization:'Dermatology', education:'MBBS, MD (Dermatology)', location:'Baner', distance_km:8.0, slots:['09:00 AM','11:00 AM','01:00 PM'], avatar:null },
+          { id:'de2', name:'Dr. Lily Fernandes', specialization:'Dermatology', education:'MBBS, DDV', location:'Koregaon', distance_km:3.9, slots:['10:00 AM','12:30 PM','04:00 PM'], avatar:null }
+        ]
+      },
+
+      "ENT": {
+        diseases: ['Ear infections','Sinusitis','Tonsillitis','Hearing loss'],
+        doctors: [
+          { id:'en1', name:'Dr. Rajeev Malhotra', specialization:'ENT', education:'MBBS, MS (ENT)', location:'Aundh', distance_km:6.0, slots:['09:30 AM','11:00 AM','03:00 PM'], avatar:null }
+        ]
+      },
+
+      "Orthopedics": {
+        diseases: ['Fractures','Arthritis','Back pain','Sports injuries','Joint pain'],
+        doctors: [
+          { id:'or1', name:'Dr. Kavita Shah', specialization:'Orthopedics', education:'MBBS, MS (Ortho)', location:'Hadapsar', distance_km:9.2, slots:['10:00 AM','02:00 PM','05:00 PM'], avatar:null }
+        ]
+      },
+
+      "Gynecology": {
+        diseases: ['Pregnancy care','PCOS','Menstrual disorders','Infertility'],
+        doctors: [
+          { id:'gy1', name:'Dr. Priya Nair', specialization:'Gynecology', education:'MBBS, DGO', location:'Kalyani Nagar', distance_km:3.7, slots:['09:30 AM','10:30 AM','02:30 PM'], avatar:null }
+        ]
+      },
+
+      "Pediatrics": {
+        diseases: ['Child vaccinations','Growth issues','Fever in child','Bronchiolitis'],
+        doctors: [
+          { id:'pe1', name:'Dr. Sneha Kulkarni', specialization:'Pediatrics', education:'MBBS, DCH', location:'Baner', distance_km:7.2, slots:['09:00 AM','11:00 AM','01:30 PM'], avatar:null }
+        ]
+      },
+
+      "Ophthalmology": {
+        diseases: ['Cataract','Glaucoma','Refractive errors','Dry eye'],
+        doctors: [
+          { id:'op1', name:'Dr. Anil Sharma', specialization:'Ophthalmology', education:'MBBS, MS (Ophth)', location:'Camp', distance_km:2.5, slots:['10:00 AM','12:00 PM','03:00 PM'], avatar:null }
+        ]
+      },
+
+      "Dental": {
+        diseases: ['Toothache','Cavities','Gum disease','Braces'],
+        doctors: [
+          { id:'dn1', name:'Dr. Tina Verma', specialization:'Dental', education:'BDS, MDS', location:'MG Road', distance_km:4.0, slots:['09:00 AM','11:00 AM','02:00 PM'], avatar:null }
+        ]
+      },
+
+      "Nephrology": {
+        diseases: ['Chronic kidney disease','Dialysis','Urinary infections'],
+        doctors: [
+          { id:'nep1', name:'Dr. Rajiv Menon', specialization:'Nephrology', education:'MBBS, DM (Nephro)', location:'Wakad', distance_km:14.5, slots:['11:00 AM','01:00 PM','04:00 PM'], avatar:null }
+        ]
+      },
+
+      "Gastroenterology": {
+        diseases: ['Acidity','Gastritis','IBS','Liver disease','Ulcers'],
+        doctors: [
+          { id:'gi1', name:'Dr. Meera Joshi', specialization:'Gastroenterology', education:'MBBS, DM (Gastro)', location:'Aundh', distance_km:6.0, slots:['09:00 AM','10:00 AM','12:30 PM'], avatar:null }
+        ]
+      },
+
+      "Oncology": {
+        diseases: ['Cancer screening','Tumor treatment','Chemotherapy care'],
+        doctors: [
+          { id:'on1', name:'Dr. Suresh Rao', specialization:'Oncology', education:'MBBS, MD (Oncology)', location:'City Cancer Center', distance_km:5.5, slots:['10:00 AM','02:00 PM','04:00 PM'], avatar:null }
+        ]
+      },
+
+      "Pulmonology": {
+        diseases: ['Asthma','COPD','Pneumonia','Bronchitis'],
+        doctors: [
+          { id:'pu1', name:'Dr. Mehul Shah', specialization:'Pulmonology', education:'MBBS, MD (Pulmonary)', location:'Lung Care Clinic', distance_km:3.2, slots:['09:00 AM','11:00 AM','03:00 PM'], avatar:null }
+        ]
+      }
+    };
+
+    // bookings stored here (in-memory)
+    const BOOKINGS = {}; // key: doctorId + '|' + slot -> booking details
+
+    /**********************
+     * Helpers
+     **********************/
+    function getQueryParam(name){
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+    function toKey(name){ return (name || '').trim(); }
+
+    // small color generator from string (consistent)
+    function stringToColor(str){
+      let hash = 0;
+      for (let i=0;i<str.length;i++){ hash = str.charCodeAt(i) + ((hash<<5)-hash); }
+      const h = Math.abs(hash) % 360;
+      return `linear-gradient(135deg,hsl(${h} 70% 45%), hsl(${(h+30)%360} 70% 50%))`;
+    }
+    function initials(name){
+      return (name || '').split(' ').filter(Boolean).slice(0,2).map(s=>s[0].toUpperCase()).join('');
+    }
+
+    /**********************
+     * DOM refs
+     **********************/
+    const specTitleEl = document.getElementById('specTitle');
+    const specLabel = document.getElementById('specLabel');
+    const diseaseListEl = document.getElementById('diseaseList');
+    const doctorsContainer = document.getElementById('doctorsContainer');
+    const noDocsEl = document.getElementById('noDocs');
+    const patientNameInput = document.getElementById('patientName');
+    const slotSearchInput = document.getElementById('slotSearch');
+
+    // profile panel refs
+    const profilePanel = document.getElementById('profilePanel');
+    const profileEmpty = document.getElementById('profileEmpty');
+    const profileEdit = document.getElementById('profileEdit');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileName = document.getElementById('profileName');
+    const profileSpec = document.getElementById('profileSpec');
+    const profileEdu = document.getElementById('profileEdu');
+    const profileLoc = document.getElementById('profileLoc');
+    const editName = document.getElementById('editName');
+    const editEdu = document.getElementById('editEdu');
+    const editLoc = document.getElementById('editLoc');
+    const fileUpload = document.getElementById('fileUpload');
+
+    let currentSpecName = '';
+    let currentDoctors = [];
+    let selectedDoctorId = null;
+    let activeSlotFilter = '';
+
+    /**********************
+     * Booking list renderer (ADDED)
+     **********************/
+    function renderBookingsList(){
+      const wrap = document.getElementById('bookingsList');
+      wrap.innerHTML = '';
+      const all = Object.values(BOOKINGS);
+      if(all.length === 0){
+        wrap.innerHTML = '<div>No bookings yet.</div>';
+        return;
+      }
+      all.forEach(b=>{
+        const item = document.createElement('div');
+        item.style.cssText = "background:#fff; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.06); padding:8px 10px; margin-bottom:8px;";
+        item.innerHTML = `
+          <div style="font-weight:700; color:var(--accent)">${escapeHtml(b.doctorName)}</div>
+          <div>👤 ${escapeHtml(b.patientName)} (${escapeHtml(b.age)})</div>
+          <div>🕒 ${escapeHtml(b.slot)}</div>
+        `;
+        wrap.appendChild(item);
+      });
+    }
+
+    /**********************
+     * Initialize
+     **********************/
+    function init(){
+      const nameFromUrl = decodeURIComponent(getQueryParam('name') || getQueryParam('spec') || '');
+      if(!nameFromUrl || !SPEC_DATA[toKey(nameFromUrl)]){
+        // fallback: choose first spec
+        const firstKey = Object.keys(SPEC_DATA)[0];
+        currentSpecName = firstKey;
+        window.history.replaceState({}, '', '?name=' + encodeURIComponent(firstKey));
+      } else {
+        currentSpecName = nameFromUrl;
+      }
+      specTitleEl.textContent = currentSpecName;
+      specLabel.textContent = currentSpecName;
+      renderSpecialization(currentSpecName);
+      // events
+      slotSearchInput.addEventListener('keydown', (e)=> {
+        if(e.key === 'Enter') {
+          activeSlotFilter = slotSearchInput.value.trim().toLowerCase();
+          renderDoctors();
+        }
+      });
+
+      // show bookings on load
+      renderBookingsList();
+    }
+
+    function renderSpecialization(specName){
+      const key = toKey(specName);
+      const spec = SPEC_DATA[key];
+      if(!spec){
+        diseaseListEl.innerHTML = '<li>No data available for this specialization.</li>';
+        doctorsContainer.innerHTML = '<div style="color:var(--muted);font-weight:700">No doctors available.</div>';
+        return;
+      }
+      // diseases
+      diseaseListEl.innerHTML = '';
+      spec.diseases.forEach(d => {
+        const li = document.createElement('li');
+        li.textContent = d;
+        diseaseListEl.appendChild(li);
+      });
+
+      // doctors array copy
+      currentDoctors = spec.doctors.map(d => Object.assign({}, d));
+      renderDoctors();
+    }
+
+    function renderDoctors(){
+      doctorsContainer.innerHTML = '';
+      if(!currentDoctors || currentDoctors.length === 0){
+        noDocsEl.style.display = 'block';
+        return;
+      }
+      // apply slot filter if present (activeSlotFilter)
+      let docs = currentDoctors.slice();
+      if(activeSlotFilter){
+        docs = docs.filter(doc => doc.slots.some(s => s.toLowerCase().includes(activeSlotFilter)));
+      }
+      // sort by distance (nearest first)
+      docs.sort((a,b)=> (a.distance_km || 0) - (b.distance_km || 0));
+      if(docs.length === 0){
+        noDocsEl.style.display = 'block';
+        return;
+      } else { noDocsEl.style.display = 'none'; }
+
+      docs.forEach(doc => {
+        const card = document.createElement('div');
+        card.className = 'doctor-card';
+        card.dataset.id = doc.id;
+
+        // avatar element: either image or initials background
+        let avatarHTML = '';
+        if(doc.avatar && typeof doc.avatar === 'string' && doc.avatar.startsWith('data:')){
+          avatarHTML = `<img src="${doc.avatar}" alt="${doc.name}">`;
+        } else if (doc.avatar && doc.avatar.startsWith('http')){
+          avatarHTML = `<img src="${doc.avatar}" alt="${doc.name}">`;
+        } else {
+          const bg = stringToColor(doc.name || doc.id || 'Dr');
+          avatarHTML = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:18px; background:${bg};">${initials(doc.name)}</div>`;
+        }
+
+        const slotsHtml = (doc.slots || []).map(slot=>{
+          const key = doc.id + '|' + slot;
+          const booked = BOOKINGS[key];
+          const disabled = booked ? ' disabled' : '';
+          return `<div class="slot ${disabled}" data-slot="${slot}" data-doc="${doc.id}">${slot}</div>`;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="avatar">${avatarHTML}</div>
+          <div class="doc-main">
+            <h4>${doc.name}</h4>
+            <p class="small">${doc.education}</p>
+            <p class="small">${doc.location}</p>
+            <div class="meta">
+              <div>${doc.specialization}</div>
+              <div>•</div>
+              <div>${(doc.distance_km || '—')} km</div>
+            </div>
+            <div class="slots">${slotsHtml}</div>
+          </div>
+          <div style="display:flex;flex-direction:column; gap:8px; align-items:flex-end">
+            <button class="book-btn" data-doc="${doc.id}">Book</button>
+            <div style="font-size:12px; color:var(--muted)">Nearest first</div>
+          </div>
+        `;
+
+        // clicking on card (not slot or button) selects doctor
+        card.addEventListener('click', (ev)=>{
+          if(ev.target.closest('.slot') || ev.target.closest('.book-btn')) return;
+          selectDoctor(doc.id);
+        });
+
+        // slots click
+        card.querySelectorAll('.slot').forEach(slotEl=>{
+          slotEl.addEventListener('click', function(ev){
+            const slot = this.dataset.slot;
+            const docId = this.dataset.doc;
+            if(this.classList.contains('disabled')) return;
+            openBookingModal(docId, slot);
+            ev.stopPropagation();
+          });
+        });
+
+        // book button click
+        card.querySelectorAll('.book-btn').forEach(btn=>{
+          btn.addEventListener('click', (ev)=>{
+            const docId = btn.dataset.doc;
+            // open modal with no preselected slot (patient chooses slot next)
+            openBookingModal(docId, null);
+            ev.stopPropagation();
+          });
+        });
+
+        doctorsContainer.appendChild(card);
+      });
+    }
+
+    /***********************
+     * select doctor -> populate profile editor
+     ***********************/
+    function selectDoctor(docId){
+      const doc = currentDoctors.find(d => d.id === docId);
+      if(!doc) return;
+      selectedDoctorId = docId;
+      profileEmpty.style.display = 'none';
+      profileEdit.style.display = 'block';
+      // avatar
+      if(doc.avatar && (doc.avatar.startsWith('data:') || doc.avatar.startsWith('http'))){
+        profileAvatar.innerHTML = `<img src="${doc.avatar}" alt="${doc.name}">`;
+      } else {
+        profileAvatar.style.background = stringToColor(doc.name || doc.id);
+        profileAvatar.textContent = initials(doc.name);
+        profileAvatar.innerHTML = profileAvatar.innerHTML; // ensure text shown
+      }
+      profileName.textContent = doc.name;
+      profileSpec.textContent = doc.specialization;
+      profileEdu.textContent = doc.education;
+      profileLoc.textContent = doc.location;
+
+      // load editable fields
+      editName.value = doc.name;
+      editEdu.value = doc.education;
+      editLoc.value = doc.location;
+    }
+
+    // file upload for profile
+    fileUpload.addEventListener('change', function(){
+      if(!selectedDoctorId) { showToast('Select a doctor first', true); return; }
+      const f = this.files && this.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = function(e){
+        // save avatar to currentDoctors array
+        const doc = currentDoctors.find(d => d.id === selectedDoctorId);
+        if(doc){
+          doc.avatar = e.target.result;
+          // update UI
+          selectDoctor(selectedDoctorId);
+          renderDoctors();
+          showToast('Profile picture updated');
+        }
+      };
+      reader.readAsDataURL(f);
+    });
+
+    function resetAvatar(){
+      if(!selectedDoctorId) return;
+      const doc = currentDoctors.find(d => d.id === selectedDoctorId);
+      if(doc){
+        doc.avatar = null;
+        selectDoctor(selectedDoctorId);
+        renderDoctors();
+        showToast('Avatar reset');
+      }
+    }
+
+    function saveProfile(){
+      if(!selectedDoctorId) return;
+      const doc = currentDoctors.find(d => d.id === selectedDoctorId);
+      if(!doc) return;
+      doc.name = editName.value.trim() || doc.name;
+      doc.education = editEdu.value.trim() || doc.education;
+      doc.location = editLoc.value.trim() || doc.location;
+      selectDoctor(selectedDoctorId);
+      renderDoctors();
+      showToast('Profile saved');
+    }
+    function cancelProfile(){
+      if(!selectedDoctorId) return;
+      selectDoctor(selectedDoctorId);
+      showToast('Cancelled');
+    }
+
+    /***********************
+     * Booking modal & actions
+     ***********************/
+    function openBookingModal(docId, preSlot){
+      const doc = currentDoctors.find(d => d.id === docId);
+      if(!doc) return;
+      const modalRoot = document.getElementById('modalRoot');
+      modalRoot.innerHTML = '';
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-back';
+      backdrop.innerHTML = `
+        <div class="modal" role="dialog" aria-modal="true">
+          <h4>Book appointment - ${escapeHtml(doc.name)}</h4>
+          <div class="small">Select slot${preSlot ? ' (preselected)' : ''}</div>
+          <div style="margin-top:10px;">
+            <select id="modalSlot" style="width:100%; padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06)">
+              <option value="">-- select slot --</option>
+              ${doc.slots.map(s => `<option ${preSlot===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+            <div class="row" style="margin-top:10px">
+              <input id="modalPatientName" placeholder="Patient name" style="flex:1;" value="${escapeHtml(patientNameInput.value || '')}" />
+              <input id="modalPatientAge" placeholder="Age" style="width:96px;" />
+            </div>
+            <div class="actions">
+              <button class="book-btn" id="confirmBooking">Confirm</button>
+              <button style="background:#6b7280; color:white; border-radius:8px; padding:8px 12px; border:0" id="cancelBooking">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+      modalRoot.appendChild(backdrop);
+
+      // default preselect
+      if(preSlot){
+        const sel = backdrop.querySelector('#modalSlot');
+        if(sel) sel.value = preSlot;
+      }
+
+      // event listeners
+      backdrop.querySelector('#cancelBooking').addEventListener('click', closeModal);
+      backdrop.querySelector('#confirmBooking').addEventListener('click', ()=>{
+        const slot = backdrop.querySelector('#modalSlot').value;
+        const name = backdrop.querySelector('#modalPatientName').value.trim();
+        const age = backdrop.querySelector('#modalPatientAge').value.trim();
+        if(!slot){ showToast('Please select a slot', true); return; }
+        if(!name){ showToast('Please enter patient name', true); return; }
+        // mark booking
+        const key = docId + '|' + slot;
+        BOOKINGS[key] = { doctorId: docId, doctorName: doc.name, patientName: name, age: age || '—', slot, time: new Date().toISOString() };
+        closeModal();
+        renderDoctors();
+        renderBookingsList(); // <--- ADDED: update right panel immediately
+        showToast('Booking successful ✅');
+      });
+    }
+
+    function closeModal(){
+      const modalRoot = document.getElementById('modalRoot');
+      modalRoot.innerHTML = '';
+    }
+
+    function escapeHtml(s){
+      return String(s || '').replace(/[&<>"']/g, (m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    /***********************
+     * Slot filter + helpers
+     ***********************/
+    function applySlotFilter(){
+      activeSlotFilter = (slotSearchInput.value || '').trim().toLowerCase();
+      renderDoctors();
+    }
+    function clearSlotFilter(){
+      slotSearchInput.value = '';
+      activeSlotFilter = '';
+      renderDoctors();
+    }
+
+    /***********************
+     * Toast
+     ***********************/
+    let toastTimer = null;
+    function showToast(msg, isError=false){
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.style.background = isError ? '#ef4444' : '#16a34a';
+      el.style.display = 'block';
+      if(toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> el.style.display = 'none', 3200);
+    }
+
+    // init
+    init();
+  </script>
+</body>
+</html>
