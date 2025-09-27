@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Symptom Checker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+    }
+    header { text-align: center; margin-bottom: 30px; color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.25); }
+    header h1 { font-size: 2.5rem; font-weight: 700; }
+    .quote { font-style: italic; font-size: 1.2rem; margin-top: 10px; color: #f0f0f0cc; }
+    .main-container {
+      display: flex; max-width: 900px; width: 100%; gap: 30px;
+      background: rgba(255 255 255 / 0.15); backdrop-filter: blur(12px);
+      border-radius: 20px; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      padding: 30px 25px; align-items: center;
+    }
+    .robot-circle {
+      flex-shrink: 0; width: 140px; height: 140px; border-radius: 50%;
+      background: linear-gradient(135deg, #43e97b, #38cc77);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15); overflow: hidden; border: 4px solid white;
+    }
+    .robot-circle img { width: 90px; height: 90px; object-fit: contain; }
+    .chat-container { flex: 1; display: flex; flex-direction: column; height: 450px; }
+    .input-container { display: flex; margin-bottom: 15px; }
+    input {
+      flex: 1; padding: 12px 18px; border-radius: 25px; border: none; outline: none;
+      font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-left: 15px; padding: 12px 25px; border-radius: 25px; border: none;
+      background-color: #43e97b; color: white; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: background-color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(67,233,123,0.6);
+    }
+    button:hover { background-color: #38cc77; }
+    .chat-box {
+      background: rgba(255 255 255 / 0.75);
+      flex: 1; padding: 20px; border-radius: 20px; overflow-y: auto;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column; gap: 15px; font-size: 1rem;
+    }
+    .message { max-width: 75%; padding: 12px 20px; border-radius: 20px; line-height: 1.4; }
+    .user { background-color: #4facfe; color: white; align-self: flex-end; }
+    .bot { background-color: #dff6fd; color: #2a2a2a; align-self: flex-start; }
+    footer { margin-top: 30px; color: #fff; font-size: 0.9rem; text-align: center; }
+    @media (max-width: 768px) {
+      .main-container { flex-direction: column; height: auto; }
+      .robot-circle { margin-bottom: 20px; width: 120px; height: 120px; }
+      .chat-container { height: 400px; width: 100%; }
+    }
+    .back-btn {
+      margin-top: 20px; padding: 10px 18px; background: #2563eb;
+      color: white; border: none; border-radius: 10px; font-size: 1rem;
+      cursor: pointer; transition: 0.3s;
+    }
+    .back-btn:hover { background: #1e40af; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Symptom Checker 💬</h1>
+    <div class="quote">"Your health is your wealth – protect it like treasure."</div>
+  </header>
+
+  <main class="main-container">
+    <div class="robot-circle">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Robot Icon" />
+    </div>
+
+    <section class="chat-container">
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Describe your symptoms here..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+
+      <div class="chat-box" id="chat-box">
+        <div class="message bot">
+          Hi! 👋 Tell me about your symptoms, and I’ll try to help.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="back-btn" onclick="window.location.href='patient.html'">⬅ Back to Patient Dashboard</button>
+
+  <footer>
+    &copy; 2025 AI Symptom Checker | Built for educational purposes 🧠
+  </footer>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+
+    const mockDatabase = [
+      { symptoms: ["fever","cough","fatigue"], disease: "Common Cold or Flu", medicine: "Paracetamol, Rest, Hydration", solutions: ["Drink warm fluids","Take rest","Monitor temperature"], specialist: "General Physician" },
+      { symptoms: ["headache","nausea","sensitivity to light"], disease: "Migraine", medicine: "Ibuprofen, Sumatriptan", solutions: ["Lie in a dark room","Avoid screens","Apply cold compress"], specialist: "Neurologist" },
+      { symptoms: ["stomach pain","diarrhea","vomiting"], disease: "Food Poisoning", medicine: "ORS, Loperamide, Probiotics", solutions: ["Stay hydrated","Eat bland foods","Avoid dairy"], specialist: "Gastroenterologist" },
+      { symptoms: ["chest pain","shortness of breath","fatigue"], disease: "Heart-related issue (possible angina)", medicine: "Aspirin (emergency), consult doctor", solutions: ["Seek emergency help","Avoid exertion","Elevate legs if dizzy"], specialist: "Cardiologist" }
+    ];
+
+    function sendMessage() {
+      const input = userInput.value.trim();
+      if (!input) return;
+      appendMessage(input, "user");
+      userInput.value = "";
+      setTimeout(() => { respondToSymptoms(input.toLowerCase()); }, 800);
+    }
+
+    function appendMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.className = `message ${sender}`;
+      msg.innerText = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function respondToSymptoms(inputText) {
+      let found = false;
+      for (let entry of mockDatabase) {
+        if (entry.symptoms.some(symptom => inputText.includes(symptom))) {
+          appendMessage(
+            `🩺 Possible Condition: ${entry.disease}\n\n💊 Suggested Medicines: ${entry.medicine}\n\n✅ Solutions:\n- ${entry.solutions.join('\n- ')}\n\n👩‍⚕️ Specialist: ${entry.specialist}`,
+            "bot"
+          );
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        appendMessage("🤔 I couldn't identify a condition. Try describing more symptoms or consult a doctor.", "bot");
+      }
+    }
+
+    userInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
