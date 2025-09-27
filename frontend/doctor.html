@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Doctor Portal</title>
+  <style>
+    :root {
+      --bg: linear-gradient(180deg,#fff7e6 0%, #fff2cc 100%);
+      --card-radius: 12px;
+      --shadow: 0 10px 28px rgba(10,30,60,0.08);
+      --accent: #b45309;
+      --muted: #5b4b3f;
+      --green: #16a34a;
+      --max-width: 1200px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--bg);
+      color: #222;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      max-width: var(--max-width);
+      margin: auto;
+    }
+    header h1 {
+      margin: 0;
+      color: var(--accent);
+      font-size: 22px;
+    }
+    .search-box {
+      display: flex;
+      gap: 8px;
+    }
+    .search-box input {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    .container {
+      max-width: var(--max-width);
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 20px;
+      padding: 0 16px 40px 16px;
+    }
+    .panel {
+      background: white;
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .doctor-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #fff8ef;
+      margin-bottom: 12px;
+      align-items: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+    .avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .doc-info h4 {
+      margin: 0;
+      color: var(--accent);
+    }
+    .doc-info p {
+      margin: 4px 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .slots { margin-top: 6px; font-size: 13px; color: #444; }
+    .add-form label { font-size: 13px; font-weight: bold; display: block; margin-top: 10px; }
+    .add-form input, .add-form select, .add-form textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .add-form button {
+      margin-top: 12px;
+      background: var(--green);
+      color: white;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .booking {
+      border: 1px solid #eee;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #fff2cc;
+    }
+    .booking h4 {
+      margin: 0;
+      font-size: 15px;
+      color: var(--accent);
+    }
+    .booking p {
+      margin: 2px 0;
+      font-size: 13px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Doctor Portal</h1>
+    <div class="search-box">
+      <input type="text" id="searchBox" placeholder="Search specialization or doctor...">
+      <button onclick="applySearch()">Search</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Left: doctors list + add form -->
+    <section>
+      <div class="panel">
+        <h3>Doctors List</h3>
+        <div id="doctorsContainer"></div>
+      </div>
+      <div class="panel add-form">
+        <h3>Add New Doctor</h3>
+        <label>Photo</label>
+        <input type="file" id="newPhoto" accept="image/*">
+        <label>Name</label>
+        <input id="newName" placeholder="Doctor name">
+        <label>Specialization</label>
+        <select id="newSpec"></select>
+        <label>Education</label>
+        <input id="newEdu" placeholder="Education (MBBS, MD...)">
+        <label>Location</label>
+        <input id="newLoc" placeholder="Clinic / Hospital">
+        <label>Available Slots (comma separated)</label>
+        <input id="newSlots" placeholder="09:00 AM, 10:30 AM, 02:00 PM">
+        <button onclick="addDoctor()">Save Doctor</button>
+      </div>
+    </section>
+
+    <!-- Right: Bookings -->
+    <aside class="panel">
+      <h3>My Bookings</h3>
+      <div id="bookingsList">No bookings yet</div>
+    </aside>
+  </main>
+
+<script>
+  // Specializations
+  const SPECIALIZATIONS = [
+    "General Medicine","Surgery","Psychiatry","Neurology","Cardiology","Dermatology","ENT",
+    "Orthopedics","Gynecology","Pediatrics","Ophthalmology","Dental","Nephrology",
+    "Gastroenterology","Oncology","Pulmonology"
+  ];
+
+  // Preloaded doctors
+  let doctors = [
+    {id:"gm1", name:"Dr. Asha Mehta", spec:"General Medicine", edu:"MBBS, MD", loc:"Pune", slots:["09:00 AM","10:00 AM"], photo:null},
+    {id:"ca1", name:"Dr. Sneha Rao", spec:"Cardiology", edu:"MBBS, DM", loc:"Camp", slots:["11:00 AM","02:00 PM"], photo:null},
+    {id:"ps1", name:"Dr. Anita Rao", spec:"Psychiatry", edu:"MBBS, DPM", loc:"Kalyani Nagar", slots:["01:00 PM","03:30 PM"], photo:null},
+  ];
+
+  // Load specializations into select
+  const newSpecSelect = document.getElementById("newSpec");
+  SPECIALIZATIONS.forEach(s=>{
+    const opt=document.createElement("option");
+    opt.value=s; opt.textContent=s;
+    newSpecSelect.appendChild(opt);
+  });
+
+  // Render doctors
+  function renderDoctors(filter="") {
+    const container=document.getElementById("doctorsContainer");
+    container.innerHTML="";
+    let filtered=doctors;
+    if(filter){
+      const f=filter.toLowerCase();
+      filtered=doctors.filter(d=>
+        d.name.toLowerCase().includes(f) ||
+        d.spec.toLowerCase().includes(f)
+      );
+    }
+    filtered.forEach(d=>{
+      const card=document.createElement("div");
+      card.className="doctor-card";
+      card.innerHTML=`
+        <div class="avatar">${d.photo?`<img src="${d.photo}">`:`<img src="https://via.placeholder.com/70">`}</div>
+        <div class="doc-info">
+          <h4>${d.name}</h4>
+          <p>${d.spec}</p>
+          <p>${d.edu}</p>
+          <p>${d.loc}</p>
+          <div class="slots">Slots: ${d.slots.join(", ")}</div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+    if(filtered.length===0){
+      container.innerHTML="<p style='color:gray'>No doctors found</p>";
+    }
+  }
+
+  // Add new doctor
+  function addDoctor(){
+    const name=document.getElementById("newName").value.trim();
+    const spec=document.getElementById("newSpec").value;
+    const edu=document.getElementById("newEdu").value.trim();
+    const loc=document.getElementById("newLoc").value.trim();
+    const slots=document.getElementById("newSlots").value.split(",").map(s=>s.trim()).filter(Boolean);
+    const photoInput=document.getElementById("newPhoto");
+    if(!name||!spec){alert("Name and specialization required");return;}
+    const newDoc={id:"d"+Date.now(), name, spec, edu, loc, slots, photo:null};
+    if(photoInput.files[0]){
+      const reader=new FileReader();
+      reader.onload=e=>{
+        newDoc.photo=e.target.result;
+        doctors.push(newDoc);
+        renderDoctors();
+      };
+      reader.readAsDataURL(photoInput.files[0]);
+    } else {
+      doctors.push(newDoc);
+      renderDoctors();
+    }
+    document.getElementById("newName").value="";
+    document.getElementById("newEdu").value="";
+    document.getElementById("newLoc").value="";
+    document.getElementById("newSlots").value="";
+    photoInput.value="";
+  }
+
+  // Search
+  function applySearch(){
+    const q=document.getElementById("searchBox").value.trim();
+    renderDoctors(q);
+  }
+
+  // Load bookings from localStorage
+  function loadBookings(){
+    const bookings=JSON.parse(localStorage.getItem("BOOKINGS")||"[]");
+    const container=document.getElementById("bookingsList");
+    container.innerHTML="";
+    if(bookings.length===0){
+      container.textContent="No bookings yet";
+      return;
+    }
+    bookings.forEach(b=>{
+      const div=document.createElement("div");
+      div.className="booking";
+      div.innerHTML=`
+        <h4>${b.patientName} (${b.age})</h4>
+        <p>Doctor: ${b.doctorName}</p>
+        <p>Specialization: ${b.specialization}</p>
+        <p>Slot: ${b.slot}</p>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  // Auto-update bookings in real time
+  window.addEventListener("storage", loadBookings);
+
+  // init
+  renderDoctors();
+  loadBookings();
+</script>
+</body>
+</html>

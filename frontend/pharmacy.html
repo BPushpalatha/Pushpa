@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HealTech - Pharmacy Stock</title>
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #a7f3d0, #ffffff, #93c5fd);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+nav { 
+  width: 100%; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 15px 40px; 
+  background: #fff; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+  position: sticky; top: 0; z-index: 10; 
+}
+nav h1 { 
+  font-size: 28px; 
+  font-weight: bold; 
+  background: linear-gradient(90deg, #2563eb, #16a34a, #f59e0b); 
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent; 
+  margin: 0 15px; 
+}
+nav .links { display: flex; gap: 20px; }
+nav .links a { text-decoration: none; font-weight: 500; color: #374151; transition: 0.3s; }
+nav .links a:hover { color: #2563eb; }
+
+h1.page-title { font-size: 42px; color: #1e40af; margin: 30px 0; text-align: center; width: 100%; }
+
+.search-container { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+.search-container input { padding: 12px 15px; width: 300px; border-radius: 30px; border: 2px solid #2563eb; outline: none; font-size: 16px; }
+.search-container button { padding: 12px 20px; border: none; border-radius: 30px; cursor: pointer; font-weight: bold; color: white; background: linear-gradient(90deg, #2563eb, #16a34a); transition: 0.3s; }
+.search-container button:hover { opacity: 0.9; transform: scale(1.05); }
+
+.pharmacy-list { width: 90%; max-width: 900px; display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px; }
+
+.pharmacy-item { background: #fff; border-radius: 15px; padding: 15px 20px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); transition: 0.3s; }
+.pharmacy-item:hover { transform: scale(1.02); }
+.pharmacy-item h3 { margin: 0 0 8px 0; color: #1e40af; }
+.pharmacy-item p { margin: 4px 0; }
+.pharmacy-item .order-btn { margin-top: 8px; padding: 8px 15px; border: none; border-radius: 12px; background: #34d399; color: white; font-weight: bold; cursor: pointer; }
+.pharmacy-item .order-btn:hover { background: #10b981; }
+.pharmacy-item .map-btn { margin-top: 5px; padding: 6px 12px; border: none; border-radius: 12px; background: #3b82f6; color: white; font-weight: bold; cursor: pointer; }
+.pharmacy-item .map-btn:hover { background: #2563eb; }
+
+footer { margin-top: auto; background: #1e40af; color: white; width: 100%; padding: 15px; text-align: center; }
+footer a { color: #93c5fd; margin: 0 10px; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+.back-btn {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.back-btn:hover { background: #1e3a8a; }
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>HealTech</h1>
+  <div class="links">
+    <a href="patient.html">Dashboard</a>
+    <a href="#">Services</a>
+    <a href="#">Privacy</a>
+    <a href="#">Helpline</a>
+  </div>
+</nav>
+
+<h1 class="page-title">Pharmacy Medicine Stock</h1>
+
+<!-- Back button to go to patient dashboard -->
+<button class="back-btn" onclick="window.location.href='patient.html'">⬅ Back to Dashboard</button>
+
+<div class="search-container">
+  <input type="text" id="medicineInput" placeholder="Search medicine..."/>
+  <button onclick="searchMedicine()">Search</button>
+  <button onclick="startVoiceSearch()">🎤 Voice Input</button>
+</div>
+
+<div class="pharmacy-list" id="pharmacyList"></div>
+
+<footer>
+  © 2025 HealTech | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+</footer>
+
+<script>
+const pharmacies = [
+  { name: "Apollo Pharmacy", address: "123 MG Road, Bengaluru, Karnataka", lat: 12.9716, lng: 77.5946 },
+  { name: "Fortis Pharmacy", address: "45 Church Street, Bengaluru, Karnataka", lat: 12.9750, lng: 77.6050 },
+  { name: "City Care Pharmacy", address: "78 Residency Road, Bengaluru, Karnataka", lat: 12.9700, lng: 77.6000 },
+  { name: "Sunrise Pharmacy", address: "56 Brigade Road, Bengaluru, Karnataka", lat: 12.9720, lng: 77.6030 },
+  { name: "HealthPlus Pharmacy", address: "89 MG Road, Bengaluru, Karnataka", lat: 12.9730, lng: 77.5980 }
+];
+
+let userLocation = null;
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+  });
+}
+
+function sanitizeInput(text) {
+  return text.replace(/[^a-zA-Z0-9 ]/g, '').trim().toLowerCase();
+}
+
+function searchMedicine() {
+  const queryRaw = document.getElementById("medicineInput").value;
+  const query = sanitizeInput(queryRaw);
+  if (!query) { alert("Please enter medicine name."); return; }
+  displayPharmacies(query);
+}
+
+function startVoiceSearch() {
+  if (!('webkitSpeechRecognition' in window)) { alert('Voice recognition not supported.'); return; }
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'en-IN';
+  recognition.start();
+  recognition.onresult = function(event) {
+    let transcript = event.results[0][0].transcript;
+    transcript = sanitizeInput(transcript);
+    document.getElementById("medicineInput").value = transcript;
+    displayPharmacies(transcript);
+  };
+}
+
+function displayPharmacies(medicine) {
+  const list = document.getElementById("pharmacyList");
+  list.innerHTML = "";
+
+  const results = pharmacies.map(p => { return { ...p, stock: Math.floor(Math.random()*50)+1 }; });
+
+  if(userLocation){
+    results.sort((a,b) => getDistance(userLocation.lat,userLocation.lng,a.lat,a.lng) - getDistance(userLocation.lat,userLocation.lng,b.lat,b.lng));
+  }
+
+  results.forEach(p => {
+    let distanceText = "";
+    if(userLocation){
+      const distanceKm = getDistance(userLocation.lat, userLocation.lng, p.lat, p.lng);
+      distanceText = `<p><strong>Distance:</strong> ${distanceKm.toFixed(1)} km</p>`;
+    }
+    const div = document.createElement("div");
+    div.className = "pharmacy-item";
+    div.innerHTML = `
+      <h3>${p.name}</h3>
+      <p><strong>Address:</strong> ${p.address}</p>
+      <p><strong>Stock of ${medicine}:</strong> ${p.stock}</p>
+      ${distanceText}
+      <button class="order-btn" onclick="orderMedicine('${p.name}','${medicine}')">Order Now</button>
+      <button class="map-btn" onclick="openMap(${p.lat},${p.lng})">View on Map</button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function getDistance(lat1, lon1, lat2, lon2){
+  const R = 6371;
+  const dLat = deg2rad(lat2-lat1);
+  const dLon = deg2rad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(deg2rad(lat1))*Math.cos(deg2rad(lat2)) * Math.sin(dLon/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R*c;
+}
+function deg2rad(deg){ return deg * (Math.PI/180); }
+
+function orderMedicine(pharmacy, med){
+  alert(`Order placed for "${med}" at "${pharmacy}".`);
+}
+function openMap(lat,lng){
+  window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+}
+</script>
+
+</body>
+</html>

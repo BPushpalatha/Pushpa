@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Specialties - HealTech</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #a7f3d0, #ffffff, #93c5fd);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav h1 {
+      font-size: 28px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #2563eb, #16a34a, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
+
+    nav .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav .links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #374151;
+      transition: 0.3s;
+    }
+
+    nav .links a:hover {
+      color: #2563eb;
+    }
+
+    h1.page-title {
+      font-size: 36px;
+      color: #1e40af;
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .specialties-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px 40px;
+      flex-grow: 1;
+    }
+
+    .specialty-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .specialty-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+
+    .specialty-card a {
+      text-decoration: none;
+      color: #1e3a8a;
+      font-size: 18px;
+      font-weight: bold;
+      display: block;
+    }
+
+    footer {
+      background: #1e40af;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+
+    footer a {
+      color: #93c5fd;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <h1>HealTech</h1>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="specialty.html">Specialties</a>
+      <a href="doctor.html?role=doctor">Doctor</a>
+      <a href="doctor.html?role=patient">Patient</a>
+    </div>
+  </nav>
+
+  <h1 class="page-title">Choose a Specialization</h1>
+
+  <div class="specialties-container">
+    <div class="specialty-card"><a href="doctor.html?name=General%20Medicine&role=patient">General Medicine</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Surgery&role=patient">Surgery</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Psychiatry&role=patient">Psychiatry</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Neurology&role=patient">Neurology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Cardiology&role=patient">Cardiology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Dermatology&role=patient">Dermatology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=ENT&role=patient">ENT</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Orthopedics&role=patient">Orthopedics</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Gynecology&role=patient">Gynecology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Pediatrics&role=patient">Pediatrics</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Ophthalmology&role=patient">Ophthalmology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Dental&role=patient">Dental</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Nephrology&role=patient">Nephrology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Gastroenterology&role=patient">Gastroenterology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Oncology&role=patient">Oncology</a></div>
+    <div class="specialty-card"><a href="doctor.html?name=Pulmonology&role=patient">Pulmonology</a></div>
+  </div>
+
+  <footer>
+    © 2025 HealTech | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+  </footer>
+
+</body>
+</html>

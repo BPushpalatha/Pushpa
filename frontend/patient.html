@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Portal - HealTech</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      margin: 30px 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      width: 90%;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .feature {
+      border-radius: 20px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    }
+
+    .feature img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .content {
+      padding: 15px;
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .content h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #111827;
+    }
+
+    .content button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 5px;
+    }
+
+    .content button:hover {
+      background: #1e40af;
+    }
+
+    /* Navbar styles */
+    .navbar {
+      width: 100%;
+      background: linear-gradient(90deg, #2563eb, #1e3a8a);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 30px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .nav-links li a:hover {
+      color: #facc15;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav class="navbar">
+    <div class="logo">HealTech</div>
+    <ul class="nav-links">
+      <li><a href="portal.html">🏠 Home</a></li>
+      <li><a href="patient.html">👩‍⚕️ Dashboard</a></li>
+      <li><a href="consultation.html">💬 Consultation</a></li>
+      <li><a href="prescription.html">📄 Prescriptions</a></li>
+    </ul>
+  </nav>
+</header>
+
+<h1>👩‍⚕️ Patient Dashboard</h1>
+
+<div class="grid">
+  <!-- 1. Symptoms Checker -->
+  <div class="feature">
+    <img src="https://miro.medium.com/v2/resize:fit:1400/1*qpB8ca3MApdeLiwoBpkUxQ.jpeg" alt="Symptoms Checker">
+    <div class="content">
+      <h2>🩺 Symptoms Checker</h2>
+      <button onclick="window.location.href='symptom.html'">Start</button>
+    </div>
+  </div>
+
+  <!-- 2. Consultation -->
+  <div class="feature">
+    <img src="https://goqii.com/blog/wp-content/uploads/Doctor-Consultation.jpg" alt="Consultation">
+    <div class="content">
+      <h2>💬 Need Consultation?</h2>
+      <div>
+        <button onclick="window.location.href='consultation.html'">Yes</button>
+        <button onclick="window.location.href='portal.html'">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Prescriptions -->
+  <div class="feature">
+    <img src="https://thumbs.dreamstime.com/b/close-up-image-professional-doctor-explaining-consulting-treatment-plan-surgery-old-lady-290996370.jpg" alt="Prescriptions">
+    <div class="content">
+      <h2>📄 Prescriptions Careline</h2>
+      <button onclick="window.location.href='prescription.html'">View</button>
+    </div>
+  </div>
+
+  <!-- 4. Pharmacy Stock -->
+  <div class="feature">
+    <img src="https://www.datarithm.co/hubfs/M_perpet-inventory.jpg" alt="Pharmacy">
+    <div class="content">
+      <h2>💊 Find Pharmacy Stock</h2>
+      <div>
+        <button onclick="window.location.href='pharmacy.html'">Yes</button>
+        <button onclick="alert('No need now')">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

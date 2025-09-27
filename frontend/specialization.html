@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specializations</title>
+<style>
+:root{
+  --page-bg: #b2f0e3;
+  --header-bg: linear-gradient(90deg,#07689f,#00a8e8);
+  --accent: #0066cc;
+  --max-width: 1200px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  background:var(--page-bg);
+  color:#123;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+.wrap{ max-width:var(--max-width); margin:26px auto; padding:0 20px; flex:1; }
+header.app-header{
+  background: var(--header-bg); 
+  padding:18px; 
+  border-radius:12px; 
+  color:white; 
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between; 
+  box-shadow:0 8px 28px rgba(2,60,100,0.12);
+}
+header h1{ margin:0; font-size:22px; }
+header .role { font-weight:700; }
+.search { display:flex; gap:8px; align-items:center; background: rgba(255,255,255,0.12); padding:6px; border-radius:10px; width:320px; }
+.search input{ border:0; outline:none; background:transparent; color:#fff; padding:8px; width:100%; }
+.grid{ margin-top:22px; display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+.card{ background:white; padding:18px; border-radius:14px; box-shadow:0 6px 18px rgba(10,30,60,0.08); display:flex; gap:12px; align-items:center; cursor:pointer; transition:transform .18s ease; }
+.card:hover{ transform:translateY(-6px); }
+.media{ width:72px; height:72px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg, #fff,#f7fbff); }
+.media img{ width:56px; height:56px; object-fit:contain; }
+.info h3{ margin:0; color:var(--accent); font-size:16px; }
+.info p{ margin:6px 0 0 0; font-size:13px; color:#456; }
+.footer { text-align:center; margin:22px 0; color:#123; opacity:0.9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="app-header">
+  <h1>Specializations</h1>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div class="role" id="roleDisplay">Role: patient</div>
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 21l-4.35-4.35" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="11" cy="11" r="6" stroke="#fff" stroke-width="2"/>
+      </svg>
+      <input id="search" placeholder="Search specialty..." />
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="grid" class="grid"></section>
+</main>
+
+<div class="footer">Click any specialty → opens detailed page. (Doctor & Patient share same specialties list.)</div>
+</div>
+
+<script>
+// Specialties list
+const SPECIALTIES = [
+  {name:'General Medicine', icon:'https://cdn-icons-png.flaticon.com/512/3774/3774299.png', desc:'Routine check-ups, infections, general health.'},
+  {name:'Surgery', icon:'https://cdn-icons-png.flaticon.com/512/3135/3135715.png', desc:'Operations, trauma, post-surgical care.'},
+  {name:'Psychiatry', icon:'https://cdn-icons-png.flaticon.com/512/4249/4249947.png', desc:'Mental health, therapy, counseling.'},
+  {name:'Neurology', icon:'https://cdn-icons-png.flaticon.com/512/4082/4082819.png', desc:'Brain, nerves, seizures, neuropathy.'},
+  {name:'Cardiology', icon:'https://cdn-icons-png.flaticon.com/512/709/709496.png', desc:'Heart related issues, chest pain.'},
+  {name:'Dermatology', icon:'https://cdn-icons-png.flaticon.com/512/3135/3135715.png', desc:'Skin issues, acne, rashes.'},
+  {name:'ENT', icon:'https://cdn-icons-png.flaticon.com/512/4359/4359963.png', desc:'Ear, nose, throat, sinus.'},
+  {name:'Orthopedics', icon:'https://cdn-icons-png.flaticon.com/512/2991/2991148.png', desc:'Bones, joints, injuries.'},
+  {name:'Gynecology', icon:'https://cdn-icons-png.flaticon.com/512/1997/1997444.png', desc:'Pregnancy, menstrual issues.'},
+  {name:'Pediatrics', icon:'https://cdn-icons-png.flaticon.com/512/4320/4320337.png', desc:'Child health, vaccinations.'},
+  {name:'Ophthalmology', icon:'https://cdn-icons-png.flaticon.com/512/4320/4320337.png', desc:'Eyes, vision, cataract.'},
+  {name:'Dental', icon:'https://cdn-icons-png.flaticon.com/512/3135/3135715.png', desc:'Tooth, braces, dental care.'},
+  {name:'Nephrology', icon:'https://cdn-icons-png.flaticon.com/512/2991/2991148.png', desc:'Kidneys, dialysis, urinary issues.'},
+  {name:'Gastroenterology', icon:'https://cdn-icons-png.flaticon.com/512/4359/4359963.png', desc:'Digestive, liver, acidity.'},
+  {name:'Oncology', icon:'https://cdn-icons-png.flaticon.com/512/4320/4320337.png', desc:'Cancer care, chemo.'},
+  {name:'Pulmonology', icon:'https://cdn-icons-png.flaticon.com/512/1997/1997444.png', desc:'Lungs, asthma, infections.'}
+];
+
+// Get role from URL query (default = patient)
+function getParam(name){
+  const p = new URLSearchParams(window.location.search);
+  return p.get(name);
+}
+const role = getParam('role') || 'patient';
+document.getElementById('roleDisplay').textContent = 'Role: ' + role;
+
+const grid = document.getElementById('grid');
+
+// Render specialties grid
+function renderGrid(q=''){
+  grid.innerHTML = '';
+  const query = q.trim().toLowerCase();
+  SPECIALTIES.forEach(s=>{
+    if(query && !(s.name.toLowerCase().includes(query) || s.desc.toLowerCase().includes(query))) return;
+    const el = document.createElement('div');
+    el.className='card';
+    el.innerHTML = `
+      <div class="media"><img src="${s.icon}" alt=""></div>
+      <div class="info"><h3>${s.name}</h3><p>${s.desc}</p></div>
+    `;
+    el.addEventListener('click', ()=> {
+      // Pass role & specialty to specialty.html
+      window.location.href = 'specialty.html?role=' + encodeURIComponent(role) + '&name=' + encodeURIComponent(s.name);
+    });
+    grid.appendChild(el);
+  });
+}
+
+renderGrid();
+
+// Search filter
+document.getElementById('search').addEventListener('input', function(){
+  renderGrid(this.value);
+});
+</script>
+</body>
+</html>

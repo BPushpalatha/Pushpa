@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About - HealTech</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9fafb; margin: 0; }
+    header { background: #1e40af; color: #fff; padding: 20px; text-align: center; }
+    section { padding: 30px; max-width: 800px; margin: auto; }
+    h2 { color: #1e3a8a; }
+    p { line-height: 1.6; color: #374151; }
+    a { display: inline-block; margin-top: 20px; color: #2563eb; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header><h1 id="about-header">About HealTech</h1></header>
+  <section>
+    <h2 id="who-title">Who We Are</h2>
+    <p id="who-desc">HealTech is a telemedicine platform designed to connect rural communities with healthcare professionals. We believe that healthcare is a right, not a privilege, and our mission is to bring quality medical services to every corner of the country.</p>
+
+    <h2 id="vision-title">Our Vision</h2>
+    <p id="vision-desc">We aim to eliminate the healthcare gap in underserved regions by leveraging technology, AI, and a pool of dedicated doctors.</p>
+
+    <h2 id="approach-title">Our Approach</h2>
+    <p id="approach-desc">From AI-powered symptom checkers to video consultations, we offer holistic healthcare solutions designed for accessibility, affordability, and reliability.</p>
+
+    <a href="index.html" id="back-home">⬅ Back to Home</a>
+  </section>
+
+  <script>
+    // Translations for About page
+    const translations = {
+      en: {
+        header: "About HealTech",
+        whoTitle: "Who We Are",
+        whoDesc: "HealTech is a telemedicine platform designed to connect rural communities with healthcare professionals. We believe that healthcare is a right, not a privilege, and our mission is to bring quality medical services to every corner of the country.",
+        visionTitle: "Our Vision",
+        visionDesc: "We aim to eliminate the healthcare gap in underserved regions by leveraging technology, AI, and a pool of dedicated doctors.",
+        approachTitle: "Our Approach",
+        approachDesc: "From AI-powered symptom checkers to video consultations, we offer holistic healthcare solutions designed for accessibility, affordability, and reliability.",
+        backHome: "⬅ Back to Home"
+      },
+      pa: {
+        header: "ਹੀਲਟੈਕ ਬਾਰੇ",
+        whoTitle: "ਅਸੀਂ ਕੌਣ ਹਾਂ",
+        whoDesc: "ਹੀਲਟੈਕ ਇੱਕ ਟੈਲੀਮੇਡੀਸਨ ਪਲੇਟਫਾਰਮ ਹੈ ਜੋ ਪਿੰਡਾਂ ਦੇ ਕਮਿਊਨਿਟੀਆਂ ਨੂੰ ਸਿਹਤ ਪੇਸ਼ੇਵਰਾਂ ਨਾਲ ਜੋੜਦਾ ਹੈ। ਅਸੀਂ ਮੰਨਦੇ ਹਾਂ ਕਿ ਸਿਹਤ ਇੱਕ ਹੱਕ ਹੈ, ਵਾਧਾ ਨਹੀਂ, ਅਤੇ ਸਾਡਾ ਮਕਸਦ ਹਰ ਕੋਨੇ ਵਿੱਚ ਗੁਣਵੱਤਾ ਵਾਲੀ ਸੇਵਾ ਪਹੁੰਚਾਉਣਾ ਹੈ।",
+        visionTitle: "ਸਾਡੀ ਦ੍ਰਿਸ਼ਟੀ",
+        visionDesc: "ਅਸੀਂ ਅਣਸੁਨੀਤ ਖੇਤਰਾਂ ਵਿੱਚ ਸਿਹਤ ਦੇ ਖ਼ਾਲੀ ਸਥਾਨ ਨੂੰ ਖਤਮ ਕਰਨ ਲਈ ਤਕਨਾਲੋਜੀ, ਏਆਈ ਅਤੇ ਸਮਰਪਿਤ ਡਾਕਟਰਾਂ ਦੀ ਟੀਮ ਦਾ ਲਾਭ ਉਠਾਉਂਦੇ ਹਾਂ।",
+        approachTitle: "ਸਾਡਾ ਤਰੀਕਾ",
+        approachDesc: "ਏਆਈ-ਸਮਰਥਿਤ ਲੱਛਣ ਜਾਂਚ ਤੋਂ ਵੀਡੀਓ ਸਲਾਹਕਾਰੀਆਂ ਤੱਕ, ਅਸੀਂ ਪਹੁੰਚਯੋਗਤਾ, ਕਿਫਾਇਤੀ ਅਤੇ ਭਰੋਸੇਮੰਦਤਾ ਲਈ ਹਲ ਮੁਹੱਈਆ ਕਰਦੇ ਹਾਂ।",
+        backHome: "⬅ ਮੁੱਖ ਪੰਨਾ"
+      },
+      hi: {
+        header: "हीलटेक के बारे में",
+        whoTitle: "हम कौन हैं",
+        whoDesc: "हीलटेक एक टेलीमेडिसिन प्लेटफ़ॉर्म है जो ग्रामीण समुदायों को स्वास्थ्य पेशेवरों से जोड़ता है। हम मानते हैं कि स्वास्थ्य एक अधिकार है, विशेषाधिकार नहीं, और हमारा मिशन गुणवत्ता वाली चिकित्सा सेवाओं को हर कोने तक पहुँचाना है।",
+        visionTitle: "हमारा दृष्टिकोण",
+        visionDesc: "हम अंडरसरव्ड क्षेत्रों में स्वास्थ्य अंतर को समाप्त करने के लिए तकनीक, एआई और समर्पित डॉक्टरों के समूह का उपयोग करते हैं।",
+        approachTitle: "हमारा तरीका",
+        approachDesc: "एआई-समर्थित लक्षण जाँच से लेकर वीडियो परामर्श तक, हम पहुंच, किफ़ायत और विश्वसनीयता के लिए व्यापक स्वास्थ्य समाधान प्रदान करते हैं।",
+        backHome: "⬅ होम पेज"
+      }
+    };
+
+    function applyLanguage(lang) {
+      const t = translations[lang] || translations.en;
+      document.getElementById("about-header").innerText = t.header;
+      document.getElementById("who-title").innerText = t.whoTitle;
+      document.getElementById("who-desc").innerText = t.whoDesc;
+      document.getElementById("vision-title").innerText = t.visionTitle;
+      document.getElementById("vision-desc").innerText = t.visionDesc;
+      document.getElementById("approach-title").innerText = t.approachTitle;
+      document.getElementById("approach-desc").innerText = t.approachDesc;
+      document.getElementById("back-home").innerText = t.backHome;
+    }
+
+    // On page load → read saved language from Home page
+    window.onload = function() {
+      const savedLang = localStorage.getItem("language") || "en";
+      applyLanguage(savedLang);
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealTech</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #a7f3d0, #ffffff, #93c5fd);
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav h1 {
+      font-size: 28px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #2563eb, #16a34a, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav .links a {
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: 500;
+      color: #374151;
+      transition: 0.3s;
+    }
+    nav .links a:hover {
+      color: #2563eb;
+    }
+
+    /* Language dropdown */
+    .lang-select {
+      padding: 6px 10px;
+      border: 1px solid #2563eb;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    /* Login */
+    nav .login {
+      font-size: 30px;
+      cursor: pointer;
+      color: #2563eb;
+      text-align: center;
+    }
+    nav .login span {
+      display: block;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+      gap: 30px;
+    }
+    @media (min-width: 768px) {
+      .hero {
+        flex-direction: row;
+        justify-content: center;
+        gap: 60px;
+        text-align: left;
+      }
+    }
+
+    /* Doctor image */
+    .doctor {
+      width: 260px;
+      border-radius: 50%;
+      animation: float 3s infinite ease-in-out;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* Text */
+    .hero-text h2 {
+      font-size: 54px;
+      font-weight: 900;
+      color: #1e40af;
+    }
+    .hero-text h2 span {
+      background: linear-gradient(90deg, #2563eb, #16a34a, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-text p {
+      font-size: 18px;
+      max-width: 500px;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .quote {
+      display: block;
+      margin-top: 10px;
+      font-style: italic;
+      color: #16a34a;
+    }
+
+    /* Button */
+    .btn {
+      margin-top: 30px;
+      padding: 18px 45px;
+      background: linear-gradient(90deg, #2563eb, #16a34a);
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 20px rgba(37,99,235,0.6);
+      transition: 0.3s;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Popup */
+    .popup-bg, .login-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup, .login-popup {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+      animation: scaleIn 0.4s ease;
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    .popup button, .login-popup button {
+      padding: 10px 25px;
+      margin: 8px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .google { background: #db4437; color: white; }
+    .signup { background: #2563eb; color: white; }
+    .create { background: #16a34a; color: white; }
+
+    /* Footer */
+    footer {
+      background: #1e40af;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      margin-top: 40px;
+    }
+    footer a {
+      color: #93c5fd;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <h1 id="nav-brand">HealTech</h1>
+    <div class="links">
+      <a href="about.html" id="nav-about">About</a>
+      <a href="services.html" id="nav-services">Services</a>
+      <a href="privacy.html" id="nav-privacy">Privacy</a>
+      <a href="helpline.html" id="nav-helpline">Helpline</a>
+    </div>
+    <div>
+      <select class="lang-select" onchange="changeLang(this.value)">
+        <option value="en">English</option>
+        <option value="pa">Punjabi</option>
+        <option value="hi">Hindi</option>
+      </select>
+    </div>
+    <div class="login" onclick="openLogin()">
+      👤
+      <span id="nav-login">Login</span>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <img src="https://i.pinimg.com/736x/0e/4a/11/0e4a111c994200dc7b68d4c210fd659b.jpg"
+         alt="Doctor smiling" class="doctor"/>
+    <div class="hero-text">
+      <h2 id="hero-title">Welcome to <span>HealTech</span></h2>
+      <p>
+        <span id="hero-desc">Bridging the healthcare gap in rural communities.</span>  
+        <span class="quote" id="hero-quote">“Your health, our priority.”</span>
+      </p>
+      <button class="btn" id="hero-btn" onclick="openPopup()">✨ Start Healing ✨</button>
+    </div>
+  </section>
+
+  <!-- Popup -->
+  <div class="popup-bg" id="popup-bg">
+    <div class="popup">
+      <h3 id="popup-title">Healing Starts Here 🌿</h3>
+      <p id="popup-desc">Redirecting you to our services page for better healthcare support.</p>
+      <button onclick="goToServices()" id="popup-btn">Continue</button>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="login-bg" id="login-bg">
+    <div class="login-popup">
+      <h3 id="login-title">Login / Sign Up</h3>
+      <button class="google" id="btn-google">Continue with Google</button><br/>
+      <button class="signup" id="btn-signup">Sign Up</button><br/>
+      <button class="create" id="btn-create">Create Account</button><br/>
+      <button onclick="closeLogin()" id="btn-close">Close</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p id="footer-text">© 2025 HealTech. All Rights Reserved.</p>
+    <a href="privacy.html" id="footer-privacy">Privacy Policy</a> | 
+    <a href="terms.html" id="footer-terms">Terms of Service</a>
+  </footer>
+
+  <script>
+  // Show popup
+  function openPopup() {
+    document.getElementById("popup-bg").style.display = "flex";
+  }
+
+  // Redirect to portal page
+  function goToServices() {
+    window.location.href = "portal.html"; // ✅ make sure you save second page as portal.html
+  }
+
+  // Show login modal
+  function openLogin() {
+    document.getElementById("login-bg").style.display = "flex";
+  }
+
+  // Close login modal
+  function closeLogin() {
+    document.getElementById("login-bg").style.display = "none";
+  }
+
+  // Translations
+  const translations = {
+    en: {
+      about: "About",
+      services: "Services",
+      privacy: "Privacy",
+      helpline: "Helpline",
+      login: "Login",
+      welcome: "Welcome to HealTech",
+      desc: "Bridging the healthcare gap in rural communities.",
+      quote: "Your health, our priority.",
+      start: "✨ Start Healing ✨",
+      popupTitle: "Healing Starts Here 🌿",
+      popupDesc: "Redirecting you to our services page for better healthcare support.",
+      popupBtn: "Continue",
+      loginTitle: "Login / Sign Up",
+      google: "Continue with Google",
+      signup: "Sign Up",
+      create: "Create Account",
+      close: "Close",
+      footerText: "© 2025 HealTech. All Rights Reserved.",
+      footerPrivacy: "Privacy Policy",
+      footerTerms: "Terms of Service"
+    },
+    pa: {
+      about: "ਬਾਰੇ",
+      services: "ਸੇਵਾਵਾਂ",
+      privacy: "ਪਰਦੇਦਾਰੀ",
+      helpline: "ਹੈਲਪਲਾਈਨ",
+      login: "ਲਾਗਇਨ",
+      welcome: "ਹੀਲਟੈਕ ਵਿਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ",
+      desc: "ਪਿੰਡਾਂ ਵਿੱਚ ਸਿਹਤ ਸੰਭਾਲ ਦੇ ਘਾਟ ਨੂੰ ਪੂਰਾ ਕਰਨਾ।",
+      quote: "ਤੁਹਾਡੀ ਸਿਹਤ, ਸਾਡੀ ਪਹਿਲ।",
+      start: "✨ ਇਲਾਜ ਸ਼ੁਰੂ ਕਰੋ ✨",
+      popupTitle: "ਇਲਾਜ ਇਥੇ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ 🌿",
+      popupDesc: "ਤੁਹਾਨੂੰ ਵਧੀਆ ਸਿਹਤ ਸਮਰਥਨ ਲਈ ਸਾਡੀਆਂ ਸੇਵਾਵਾਂ ਵੱਲ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।",
+      popupBtn: "ਜਾਰੀ ਰੱਖੋ",
+      loginTitle: "ਲਾਗਇਨ / ਸਾਇਨ ਅਪ",
+      google: "ਗੂਗਲ ਨਾਲ ਜਾਰੀ ਰੱਖੋ",
+      signup: "ਸਾਇਨ ਅਪ",
+      create: "ਖਾਤਾ ਬਣਾਓ",
+      close: "ਬੰਦ ਕਰੋ",
+      footerText: "© 2025 ਹੀਲਟੈਕ. ਸਭ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।",
+      footerPrivacy: "ਪਰਦੇਦਾਰੀ ਨੀਤੀ",
+      footerTerms: "ਸੇਵਾ ਦੀਆਂ ਸ਼ਰਤਾਂ"
+    },
+    hi: {
+      about: "परिचय",
+      services: "सेवाएँ",
+      privacy: "गोपनीयता",
+      helpline: "हेल्पलाइन",
+      login: "लॉगिन",
+      welcome: "हीलटेक में आपका स्वागत है",
+      desc: "ग्रामीण समुदायों में स्वास्थ्य देखभाल की खाई को पाटना।",
+      quote: "आपका स्वास्थ्य, हमारी प्राथमिकता।",
+      start: "✨ उपचार शुरू करें ✨",
+      popupTitle: "उपचार यहीं से शुरू होता है 🌿",
+      popupDesc: "आपको बेहतर स्वास्थ्य समर्थन के लिए हमारी सेवाओं पेज पर भेजा जा रहा है।",
+      popupBtn: "जारी रखें",
+      loginTitle: "लॉगिन / साइन अप",
+      google: "Google के साथ जारी रखें",
+      signup: "साइन अप",
+      create: "खाता बनाएँ",
+      close: "बंद करें",
+      footerText: "© 2025 हीलटेक. सर्वाधिकार सुरक्षित।",
+      footerPrivacy: "गोपनीयता नीति",
+      footerTerms: "सेवा की शर्तें"
+    }
+  };
+
+  function changeLang(lang) {
+    localStorage.setItem("language", lang);
+    applyTranslations(lang);
+    document.querySelector(".lang-select").value = lang;
+  }
+
+  function applyTranslations(lang) {
+    const t = translations[lang] || translations.en;
+    document.getElementById("nav-about").innerText = t.about;
+    document.getElementById("nav-services").innerText = t.services;
+    document.getElementById("nav-privacy").innerText = t.privacy;
+    document.getElementById("nav-helpline").innerText = t.helpline;
+    document.getElementById("nav-login").innerText = t.login;
+    document.getElementById("hero-title").innerHTML = t.welcome.replace("HealTech","<span>HealTech</span>");
+    document.getElementById("hero-desc").innerText = t.desc;
+    document.getElementById("hero-quote").innerText = t.quote;
+    document.getElementById("hero-btn").innerText = t.start;
+    document.getElementById("popup-title").innerText = t.popupTitle;
+    document.getElementById("popup-desc").innerText = t.popupDesc;
+    document.getElementById("popup-btn").innerText = t.popupBtn;
+    document.getElementById("login-title").innerText = t.loginTitle;
+    document.getElementById("btn-google").innerText = t.google;
+    document.getElementById("btn-signup").innerText = t.signup;
+    document.getElementById("btn-create").innerText = t.create;
+    document.getElementById("btn-close").innerText = t.close;
+    document.getElementById("footer-text").innerText = t.footerText;
+    document.getElementById("footer-privacy").innerText = t.footerPrivacy;
+    document.getElementById("footer-terms").innerText = t.footerTerms;
+  }
+
+  window.onload = function() {
+    const savedLang = localStorage.getItem("language") || "en";
+    document.querySelector(".lang-select").value = savedLang;
+    applyTranslations(savedLang);
+  };
+  </script>
+</body>
+</html>
