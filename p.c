@@ -2,6 +2,6 @@
 #include<stdlib.h>
 int main()
 {
-	printf("I Love You Pushpa\n");
+	printf("Hello world!\n");
 	return 0;
 }
